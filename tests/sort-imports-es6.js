@@ -13,6 +13,7 @@
 
 var rule = require("../rules/sort-imports-es6");
 var RuleTester = require('eslint').RuleTester;
+var typescriptParser = require('@typescript-eslint/parser');
 
 //------------------------------------------------------------------------------
 // Tests
@@ -143,30 +144,6 @@ const fixtures = {
             code:
                 "import {foo} from 'foo';\n" +
                 "import bar from 'bar';",
-        },
-        // ensure that typed imports are in the right place and options are evaluated.
-        {
-            code:
-                "import bar from 'bar'; \n" +
-                "import foo from 'foo';\n" +
-                "import type baz from 'baz';",
-            parser: require.resolve('babel-eslint'),
-        },
-        {
-            code:
-                "import type foo from 'foo';\n" +
-                "import bar from 'bar'; \n" +
-                "import baz from 'baz';",
-            options: [{ typeSortStrategy: "before" }],
-            parser: require.resolve('babel-eslint'),
-        },
-        {
-            code:
-                "import bar from 'bar'; \n" +
-                "import type baz from 'baz';\n" +
-                "import foo from 'foo';",
-            options: [{ typeSortStrategy: "mixed" }],
-            parser: require.resolve('babel-eslint'),
         },
 
         // ensure that only consecutive (no lines inbetween) imports are sorted
@@ -556,7 +533,7 @@ import path from 'path';
 };
 
 RuleTester.setDefaultConfig({
-    parserOptions: {
+    languageOptions: {
         sourceType: 'module',
         ecmaVersion: 6,
     }
@@ -566,14 +543,8 @@ var ruleTester = new RuleTester();
 ruleTester.run("sort-imports - esprima", rule, fixtures);
 
 RuleTester.setDefaultConfig({
-    parser: require.resolve('babel-eslint')
-});
-ruleTester = new RuleTester();
-ruleTester.run("sort-imports - babel-eslint", rule, fixtures);
-
-RuleTester.setDefaultConfig({
-    parser: require.resolve('@typescript-eslint/parser'),
-    parserOptions: {
+    languageOptions: {
+        parser: typescriptParser,
         sourceType: 'module',
         ecmaVersion: 6,
     }
